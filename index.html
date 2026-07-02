@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Confidential Wallet · Stellar testnet</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%9B%A1</text></svg>" />
+    <!-- Cross-origin isolation for bb.js on static hosts (GitHub Pages). No-op where COOP/COEP headers already exist (dev/preview). -->
+    <script>
+      window.coi = { coepCredentialless: () => true };
+      (function () {
+        var s = document.createElement("script");
+        s.src = new URL("coi-serviceworker.js", document.baseURI).href;
+        document.head.appendChild(s);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

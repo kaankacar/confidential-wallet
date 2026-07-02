@@ -16,7 +16,9 @@
  */
 import { setUltraHonkBackendLoader } from "@ctd/sdk";
 
-const BB_URL = "/vendor/bb/index.js";
+// Base-aware so it works both at the dev root ("/") and under a GitHub Pages
+// subpath ("/confidential-wallet/"). import.meta.env.BASE_URL always ends in "/".
+const BB_URL = `${import.meta.env.BASE_URL}vendor/bb/index.js`;
 
 let registered = false;
 

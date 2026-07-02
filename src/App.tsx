@@ -122,6 +122,8 @@ export default function App() {
         <span className="badge net">● testnet</span>
       </header>
 
+      <IntroCard />
+
       <AccountSwitcher
         accounts={accounts}
         activeId={activeId}
@@ -223,6 +225,61 @@ export default function App() {
         token <a href={`${EXPLORER}/contract/${DEPLOYMENT.contracts.token}`} target="_blank" rel="noreferrer">{short(DEPLOYMENT.contracts.token)}</a>
         {" · "}reuses the OpenZeppelin confidential-token rails · proofs generated locally in your browser
       </footer>
+    </div>
+  );
+}
+
+const LIFECYCLE: { step: string; text: string }[] = [
+  { step: "Register", text: "publish your confidential public key (a one-time ZK proof)." },
+  { step: "Deposit", text: "move public XLM into an encrypted balance — the amount entering is public, but from here on it's hidden." },
+  { step: "Merge", text: "apply an incoming (pending) balance so you can spend it." },
+  { step: "Transfer", text: "send to another account. The amount is proven valid in zero-knowledge and never revealed." },
+  { step: "Withdraw", text: "cash an encrypted balance back out to public XLM." },
+];
+
+function IntroCard() {
+  const [open, setOpen] = useState(() => localStorage.getItem("ctd-intro-dismissed") !== "1");
+  if (!open) {
+    return (
+      <button className="intro-reopen" onClick={() => setOpen(true)}>
+        ⓘ How confidential tokens work
+      </button>
+    );
+  }
+  return (
+    <div className="card intro">
+      <div className="rowhead">
+        <h3 style={{ margin: 0 }}>How confidential tokens work</h3>
+        <button
+          className="btn ghost"
+          onClick={() => {
+            localStorage.setItem("ctd-intro-dismissed", "1");
+            setOpen(false);
+          }}
+        >
+          Got it
+        </button>
+      </div>
+      <p className="hint" style={{ marginBottom: 12 }}>
+        A normal token transfer writes the <strong>amount</strong> onto the public ledger forever.
+        A <strong>confidential token</strong> stores every balance as an <strong>encrypted commitment</strong> — a
+        point on an elliptic curve, not a number. Each transfer carries a{" "}
+        <strong>zero-knowledge proof</strong> that it&apos;s valid (you had enough; nothing was minted)
+        <em> without revealing the amount</em>. Only the holder can decrypt their own balance. Here that proof is
+        generated <strong>in your browser</strong> and checked on-chain by a Soroban verifier.
+      </p>
+      <ol className="steps">
+        {LIFECYCLE.map((l) => (
+          <li key={l.step}>
+            <span className="k">{l.step}</span> — {l.text}
+          </li>
+        ))}
+      </ol>
+      <p className="hint" style={{ margin: "12px 0 0" }}>
+        💡 Two things to try: watch the <strong>“What everyone else sees”</strong> panel below — your balance is a
+        number to you but ciphertext to the world. And <strong>switch accounts</strong> (Alice ↔ Bob) to play both
+        the sender and the recipient of a hidden transfer.
+      </p>
     </div>
   );
 }

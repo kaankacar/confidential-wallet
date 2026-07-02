@@ -21,6 +21,9 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "..");
 const CRS_ORIGIN = "https://crs.aztec.network";
+// Same-origin CRS path, base-aware for a GitHub Pages subpath deploy.
+// PUBLIC_BASE mirrors Vite's `base` (e.g. "/confidential-wallet/"); default "/".
+const CRS_PATH = `${(process.env.PUBLIC_BASE ?? "/").replace(/\/+$/, "")}/crs`;
 
 function findBrowserDir() {
   const candidates = [];
@@ -50,11 +53,11 @@ for (const f of await readdir(destDir)) {
   const p = join(destDir, f);
   const before = await readFile(p, "utf8");
   if (before.includes(CRS_ORIGIN)) {
-    await writeFile(p, before.split(CRS_ORIGIN).join("/crs"));
+    await writeFile(p, before.split(CRS_ORIGIN).join(CRS_PATH));
     patched++;
   }
 }
-console.log(`vendored @aztec/bb.js → ${destDir} (${(await readdir(destDir)).length} files, CRS-patched ${patched})`);
+console.log(`vendored @aztec/bb.js → ${destDir} (${(await readdir(destDir)).length} files, CRS → ${CRS_PATH} in ${patched})`);
 
 // 3. vendor the CRS (prefixes are enough for these small circuits; skip if present)
 const crsDir = join(projectRoot, "public", "crs");
