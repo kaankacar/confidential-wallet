@@ -27,6 +27,7 @@ interface AccountsState {
   rename: (id: string, name: string) => void;
   remove: (id: string) => void;
   markFunded: (id: string) => void;
+  fund: (id: string) => Promise<boolean>;
   ensureSeed: () => Promise<void>;
 }
 
@@ -79,21 +80,26 @@ export const useAccounts = create<AccountsState>()(
       markFunded: (id) =>
         set((s) => ({ accounts: s.accounts.map((a) => (a.id === id ? { ...a, funded: true } : a)) })),
 
+      fund: async (id) => {
+        const a = get().accounts.find((x) => x.id === id);
+        if (!a) return false;
+        if (a.funded) return true;
+        const ok = await friendbotFund(a.publicKey);
+        if (ok) get().markFunded(id);
+        return ok;
+      },
+
       ensureSeed: async () => {
-        if (get().seeded || get().accounts.length > 0) {
-          set({ seeded: true });
-          return;
+        if (get().accounts.length === 0) {
+          const alice = makeAccount("Alice");
+          const bob = makeAccount("Bob");
+          set({ accounts: [alice, bob], activeId: alice.id });
         }
         set({ seeded: true });
-        const alice = makeAccount("Alice");
-        const bob = makeAccount("Bob");
-        set({ accounts: [alice, bob], activeId: alice.id });
-        const [af, bf] = await Promise.all([
-          friendbotFund(alice.publicKey),
-          friendbotFund(bob.publicKey),
-        ]);
-        if (af) get().markFunded(alice.id);
-        if (bf) get().markFunded(bob.id);
+        // Fund any unfunded accounts. Runs on every mount so funding recovers if
+        // a prior load's friendbot request was interrupted (e.g. by the
+        // coi-serviceworker reload that establishes cross-origin isolation).
+        await Promise.all(get().accounts.filter((a) => !a.funded).map((a) => get().fund(a.id)));
       },
     }),
     { name: "ctd-wallet-accounts" },

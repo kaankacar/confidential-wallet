@@ -14,7 +14,7 @@ const ACTIONS: Record<ActionTab, { icon: string; title: string; hint: string }> 
 };
 
 export default function App() {
-  const { accounts, activeId, ensureSeed, addAccount, switchTo } = useAccounts();
+  const { accounts, activeId, ensureSeed, addAccount, switchTo, fund } = useAccounts();
   const active = accounts.find((a) => a.id === activeId) ?? null;
 
   const [wallet, setWallet] = useState<ConfidentialWallet | null>(null);
@@ -26,6 +26,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<ActionTab>("deposit");
   const [adding, setAdding] = useState(false);
+  const [fundingBusy, setFundingBusy] = useState(false);
 
   const [depositAmt, setDepositAmt] = useState("1000");
   const [transferTo, setTransferTo] = useState("");
@@ -139,6 +140,23 @@ export default function App() {
       ) : (
         <>
           <Balances view={view} loading={busy === "loading"} />
+
+          {!active.funded && (
+            <div className="note warn" style={{ marginTop: 16 }}>
+              <span>{active.name} isn&apos;t funded yet — needs a little testnet XLM to pay fees.</span>
+              <button
+                className="btn merge"
+                disabled={fundingBusy}
+                onClick={async () => {
+                  setFundingBusy(true);
+                  await fund(active.id);
+                  setFundingBusy(false);
+                }}
+              >
+                {fundingBusy ? "Funding…" : "Fund with friendbot"}
+              </button>
+            </div>
+          )}
 
           {view?.registered && showMerge && (
             <div className="note warn" style={{ marginTop: 16 }}>
