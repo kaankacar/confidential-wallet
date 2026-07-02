@@ -53,10 +53,12 @@ amounts you see decrypted in your own wallet.
 
 - **Vite + React + TypeScript**, no backend. Key derivation, proving, and state
   reconstruction all run client-side against public Soroban RPC + friendbot.
-- Reuses OpenZeppelin-style confidential-token rails via **`@ctd/sdk`** (Pedersen
-  commitments on Grumpkin, UltraHonk proofs via `bb.js` with a keccak transcript,
-  verified on-chain by a native-BN254 Soroban verifier). The SDK is consumed in
-  place through a local `link:` dependency.
+- Reuses the confidential-token rails from OpenZeppelin's demo
+  ([`brozorec/stellar-confidential-token-demo`](https://github.com/brozorec/stellar-confidential-token-demo))
+  via its **`@ctd/sdk`** package (Pedersen commitments on Grumpkin, UltraHonk
+  proofs via `bb.js` with a keccak transcript, verified on-chain by a
+  native-BN254 Soroban verifier). The SDK is consumed in place through a local
+  `link:` dependency.
 - **bb.js** is vendored into `public/vendor/bb` and loaded as native ESM so its
   wasm Web Worker resolves correctly; its CRS is vendored same-origin into
   `public/crs`. The page is served **cross-origin isolated** (COOP/COEP) so
@@ -136,3 +138,13 @@ scripts/
 - Balance reconstruction reads Soroban RPC events, retained ~7 days — so this
   wallet is scoped to accounts that transact recently (as demo accounts do). A
   production wallet would use an indexer.
+
+## Credits
+
+The confidential-token contracts, circuits, and `@ctd/sdk` this wallet builds on
+come from **OpenZeppelin's Stellar confidential-token demo** —
+[github.com/brozorec/stellar-confidential-token-demo](https://github.com/brozorec/stellar-confidential-token-demo).
+See also OpenZeppelin's Soroban contracts library,
+[OpenZeppelin/stellar-contracts](https://github.com/OpenZeppelin/stellar-contracts).
+This project only adds the wallet UX (multi-account switching, the teaching
+intro, and the observer panel) on top of those rails.
