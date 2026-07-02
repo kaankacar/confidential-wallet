@@ -1,5 +1,7 @@
 # Confidential Wallet — Stellar testnet
 
+**▶ Live demo: https://kaankacar.github.io/confidential-wallet/**
+
 A minimal, self-contained **confidential-token wallet** on Stellar/Soroban with
 **in-browser multi-account switching**. Send and receive tokens where the
 **amounts are hidden on-chain** — balances are stored as elliptic-curve
