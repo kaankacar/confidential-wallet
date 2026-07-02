@@ -1,6 +1,6 @@
 # Confidential Wallet — Stellar testnet
 
-**▶ Live demo: https://kaankacar.github.io/confidential-wallet/**
+**▶ Live demo: https://confidential-wallet-kaans-projects-f531fbcb.vercel.app**
 
 A minimal, self-contained **confidential-token wallet** on Stellar/Soroban with
 **in-browser multi-account switching**. Send and receive tokens where the
